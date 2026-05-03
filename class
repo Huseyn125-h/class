@@ -1,0 +1,62 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace AR_FCoding_Pro
+{
+    public interface IStoreItem
+    {
+        string Model { get; set; }
+        double Price { get; set; }
+        void GetTechSpecs();
+    }
+
+    public abstract class ElectronicProduct : IStoreItem
+    {
+        public string Model { get; set; }
+        public double Price { get; set; }
+        public string Brand { get; set; }
+        public int WarrantyMonths { get; set; }
+
+        public abstract void GetTechSpecs();
+    }
+
+    public class Laptop : ElectronicProduct
+    {
+        public string Processor { get; set; }
+        public int RamGB { get; set; }
+
+        public override void GetTechSpecs() =>
+            Console.WriteLine($"[Laptop] {Brand} {Model} - Prosessor: {Processor}, RAM: {RamGB}GB, Qiymət: {Price} AZN");
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            var inventory = new List<Laptop>
+            {
+                new() { Brand = "ASUS", Model = "ROG Strix", Price = 3200, Processor = "i9", RamGB = 32, WarrantyMonths = 24 },
+                new() { Brand = "HP", Model = "Victus", Price = 1850, Processor = "i5", RamGB = 16, WarrantyMonths = 12 },
+                new() { Brand = "Apple", Model = "MacBook Pro", Price = 4500, Processor = "M3 Max", RamGB = 32, WarrantyMonths = 36 },
+                new() { Brand = "Acer", Model = "Aspire", Price = 950, Processor = "i3", RamGB = 8, WarrantyMonths = 6 },
+                new() { Brand = "Dell", Model = "p1-XPS", Price = 2700, Processor = "i7", RamGB = 16, WarrantyMonths = 18 }
+            };
+
+            bool foundP1 = inventory.Any(x => x.Model.Contains("p1", StringComparison.OrdinalIgnoreCase));
+            Console.WriteLine($"Sistemdə 'p1' kodlu məhsul varmı? -> {foundP1}");
+
+            Console.WriteLine("\n--- Premium Seqment Məhsullar ---");
+            var premiumItems = inventory
+                .Where(x => x.Price > 2000 && x.RamGB >= 16)
+                .OrderByDescending(x => x.Price);
+
+            foreach (var item in premiumItems) item.GetTechSpecs();
+
+            inventory.RemoveAll(x => x.WarrantyMonths < 12);
+
+            Console.WriteLine("\nSatışda qalan əsas məhsullar:");
+            inventory.ForEach(x => x.GetTechSpecs());
+        }
+    }
+}
